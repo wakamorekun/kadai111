@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% comment %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LIKEBBS Project-投稿詳細ページ</title>
+</head>
+<body>
+    <h1>{{ object.id }}の投稿詳細ページ</h1>
+    <div class="container">
+        <p>{{ object.author }}：{{ object.created_at }}</p>
+        <p>{{ object.content }}</p>
+    </div>
+    <p><a href="{% url 'likebbs:index' %}">一覧ページへ戻る</a></p>
+</body>
+</html>
+{% endcomment %}
+
+{% block title %}-投稿詳細ページ{% endblock %}
+
+{% block content %}
+    <h1>{{ object.id }}の投稿詳細ページ</h1>
+    <div class="container">
+        <p>{{ object.author }}：{{ object.created_at }}</p>
+        <p>最終更新：{{ object.updated_at }}</p>
+        <p>{{ object.content }}</p>
+        <p><a href="{% url "likebbs:update" object.pk %}">編集</a></p>
+        <p><a href="{% url "likebbs:delete" object.pk %}">削除</a></p>
+    </div>
+    <p><a href="{% url 'likebbs:index' %}">一覧ページへ戻る</a></p>
+{% endblock %}

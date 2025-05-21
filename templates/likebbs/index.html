@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% comment %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LIKEBBS Project</title>
+</head>
+
+<body>
+  <h1>CRUDアプリを作ってみよう</h1>
+  {% for article in object_list %}
+     <div class="container">
+        <p>{{ article.id }}：{{ article.author}}：{{ article.created_at }}</p>
+        <p><a href="{% url 'likebbs:detail' article.id %}">{{ article.content }}</a></p>
+     </div>
+  {% endfor %}
+</body>
+</html>
+{% endcomment %}
+
+{% block content %}
+  <h1>CRUDアプリ（演習課題）</h1>
+  {% for article in object_list %}
+    <div class="container">
+       <p>{{ article.id }}：{{ article.author}}：{{ article.created_at }}</p>
+       <p><a href="{% url 'likebbs:detail' article.id %}">{{ article.content }}</a></p>
+    </div>
+  {% endfor %}
+  <a href="{% url 'likebbs:create' %}">新規投稿</a>
+{% endblock %}

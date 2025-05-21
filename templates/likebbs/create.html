@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title%}{{ object|yesno:'-投稿編集,-新規作成' }}{% endblock %}
+
+{% block content %}
+<h1>投稿の{{object|yesno:'編集,新規作成'}}</h1> {# 新規と編集で表示を変更 #}
+
+<form action="" method='post'>
+    {% csrf_token %}
+    {{ form.as_p }}  {# すべての項目を表示 #}
+    <button type="submit">{{object|yesno:'更新,作成'}}</button> {# 新規と編集で表示を変更 #}
+</form>
+<div>
+    <a href="{% url 'likebbs:index'%}">一覧ページへ戻る</a>
+</div>
+{% endblock  %}
