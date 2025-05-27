@@ -5,12 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LIKEBBS Project{% block title %}{% endblock %}</title>
     <style>
-        .container{
-            background-color:#efefef;
+        .container {
+            background-color: #efefef;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
         }
-     </style>
+        
+        .like-section {
+            margin-top: 10px;
+        }
+        
+        .like-button, .like-button-fallback {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            margin: 2px 2px;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+    </style>
 </head>
 <body>
+    <header>
+        <div>
+            {% if user.is_authenticated %}
+                <p>ようこそ、{{ user.username }}さん</p>
+                <a href="{% url 'admin:logout' %}">ログアウト</a>
+            {% else %}
+                <a href="{% url 'admin:login' %}">ログイン</a>
+            {% endif %}
+        </div>
+    </header>
+    
     {% block content %}
     {% comment %} 各ページのコンテンツが挿入される {% endcomment %}
     {% endblock %}

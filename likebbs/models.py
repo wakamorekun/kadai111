@@ -13,3 +13,20 @@ class Article(models.Model):
     
     def __str__(self):
         return self.content
+    
+    def like_count(self):
+        """いいねの数を返す"""
+        return self.like_set.count()
+
+class Like(models.Model):
+    """いいねモデル"""
+    article = models.ForeignKey(Article, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        # 同じ記事に同じユーザーが複数回いいねできないようにする
+        unique_together = ('article', 'user')
+    
+    def __str__(self):
+        return f"{self.user} likes {self.article}"

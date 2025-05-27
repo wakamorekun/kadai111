@@ -9,4 +9,6 @@ urlpatterns = [
     path('create/', views.CreateView.as_view(), name='create'),     # 新規投稿ページ
     path('<int:pk>/update/', views.UpdateView.as_view(), name="update"),  # 投稿編集ページ
     path('<int:pk>/delete/', views.DeleteView.as_view(), name="delete"),  # 投稿削除ページ
+    path('<int:pk>/like/', views.LikeView.as_view(), name="like"),  # いいね処理
+    path('api/<int:pk>/like/', views.LikeAPIView.as_view(), name="like_api"),  # いいねAPI (Ajax用)
 ]

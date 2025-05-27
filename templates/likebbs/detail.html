@@ -1,22 +1,5 @@
 {% extends "base.html" %}
-{% comment %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIKEBBS Project-投稿詳細ページ</title>
-</head>
-<body>
-    <h1>{{ object.id }}の投稿詳細ページ</h1>
-    <div class="container">
-        <p>{{ object.author }}：{{ object.created_at }}</p>
-        <p>{{ object.content }}</p>
-    </div>
-    <p><a href="{% url 'likebbs:index' %}">一覧ページへ戻る</a></p>
-</body>
-</html>
-{% endcomment %}
+{% load likebbs_tags %}
 
 {% block title %}-投稿詳細ページ{% endblock %}
 
@@ -26,8 +9,77 @@
         <p>{{ object.author }}：{{ object.created_at }}</p>
         <p>最終更新：{{ object.updated_at }}</p>
         <p>{{ object.content }}</p>
-        <p><a href="{% url "likebbs:update" object.pk %}">編集</a></p>
-        <p><a href="{% url "likebbs:delete" object.pk %}">削除</a></p>
+        
+        <!-- いいねボタンとカウント表示 -->
+        <div class="like-section">
+            <span id="like-count-{{ object.id }}">いいね数: {{ object.like_count }}</span>
+            
+            {% if user.is_authenticated %}
+                <!-- Ajaxでいいね処理を行う -->
+                {% has_liked object user as liked %}
+                <button class="like-button" data-article-id="{{ object.id }}">
+                    {% if liked %}
+                        いいね解除
+                    {% else %}
+                        いいね
+                    {% endif %}
+                </button>
+                
+                <!-- フォーム送信でいいね処理を行う場合（JavaScriptが無効な場合の対応） -->
+                <form action="{% url 'likebbs:like' object.id %}" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="like-button-fallback">
+                        {% if liked %}
+                            いいね解除
+                        {% else %}
+                            いいね
+                        {% endif %}
+                    </button>
+                </form>
+            {% endif %}
+        </div>
+        
+        <!-- 編集・削除ボタン -->
+        {% if user == object.author %}
+            <p><a href="{% url "likebbs:update" object.pk %}">編集</a></p>
+            <p><a href="{% url "likebbs:delete" object.pk %}">削除</a></p>
+        {% endif %}
     </div>
     <p><a href="{% url 'likebbs:index' %}">一覧ページへ戻る</a></p>
+    
+    <!-- Ajaxのためのスクリプト -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // いいねボタンがクリックされたときの処理
+            document.querySelectorAll('.like-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    const articleId = this.dataset.articleId;
+                    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                    
+                    // JavaScriptを使っている場合はフォーム送信ボタンを非表示にする
+                    document.querySelectorAll('.like-button-fallback').forEach(btn => {
+                        btn.style.display = 'none';
+                    });
+                    
+                    // Ajaxでいいね処理を行う
+                    fetch(`/likebbs/api/${articleId}/like/`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': csrfToken,
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        // いいね数を更新
+                        document.getElementById(`like-count-${articleId}`).textContent = `いいね数: ${data.count}`;
+                        
+                        // ボタンのテキストを更新
+                        this.textContent = data.liked ? 'いいね解除' : 'いいね';
+                    })
+                    .catch(error => console.error('Error:', error));
+                });
+            });
+        });
+    </script>
 {% endblock %}
