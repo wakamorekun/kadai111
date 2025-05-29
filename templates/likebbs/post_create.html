@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}{{ object|yesno:'-投稿編集,-新規投稿' }}{% endblock %}
+
+{% block content %}
+<h1>投稿の{{ object|yesno:'編集,新規作成' }}</h1>
+
+<form action="" method="post">
+    {% csrf_token %}
+    <div style="margin-bottom: 15px;">
+        <label for="{{ form.title.id_for_label }}">{{ form.title.label }}:</label><br>
+        {{ form.title }}
+        {% if form.title.errors %}
+            <div style="color: red;">{{ form.title.errors }}</div>
+        {% endif %}
+    </div>
+    
+    <div style="margin-bottom: 15px;">
+        <label for="{{ form.genre.id_for_label }}">{{ form.genre.label }}:</label><br>
+        {{ form.genre }}
+        {% if form.genre.errors %}
+            <div style="color: red;">{{ form.genre.errors }}</div>
+        {% endif %}
+    </div>
+    
+    <div style="margin-bottom: 15px;">
+        <label for="{{ form.content.id_for_label }}">{{ form.content.label }}:</label><br>
+        {{ form.content }}
+        {% if form.content.errors %}
+            <div style="color: red;">{{ form.content.errors }}</div>
+        {% endif %}
+    </div>
+    
+    <button type="submit" style="background-color: #007cba; color: white; padding: 10px 20px; border: none; border-radius: 3px; cursor: pointer;">
+        {{ object|yesno:'更新,作成' }}
+    </button>
+</form>
+
+<div style="margin-top: 20px;">
+    {% if object %}
+        <a href="{% url 'likebbs:post_detail' object.pk %}">投稿詳細へ戻る</a> |
+    {% endif %}
+    <a href="{% url 'likebbs:post_index' %}">投稿一覧へ戻る</a>
+</div>
+{% endblock %}

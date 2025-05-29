@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% load likebbs_tags %}
+
+{% block title %}- {{ post.title }}{% endblock %}
+
+{% block content %}
+<h1>{{ post.title }}</h1>
+
+<div class="container">
+    <p><strong>ジャンル:</strong> {{ post.get_genre_display }}</p>
+    <p><strong>投稿者:</strong> {{ post.author }}</p>
+    <p><strong>投稿日:</strong> {{ post.created_at|date:"Y年m月d日 H:i" }}</p>
+    <p><strong>最終更新:</strong> {{ post.updated_at|date:"Y年m月d日 H:i" }}</p>
+    
+    <div style="margin: 20px 0; padding: 15px; background-color: #f9f9f9; border-left: 4px solid #007cba;">
+        {{ post.content|linebreaks }}
+    </div>
+    
+    <!-- いいねボタンとカウント表示 -->
+    <div class="like-section">
+        <span id="like-count-{{ post.id }}">いいね数: {{ post.like_count }}</span>
+        
+        {% if user.is_authenticated %}
+            {% has_liked_post post user as liked %}
+            <button class="like-button" data-post-id="{{ post.id }}">
+                {% if liked %}
+                    いいね解除
+                {% else %}
+                    いいね
+                {% endif %}
+            </button>
+            
+            <!-- フォーム送信でいいね処理を行う場合（JavaScriptが無効な場合の対応） -->
+            <form action="{% url 'likebbs:post_like' post.id %}" method="post" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="like-button-fallback">
+                    {% if liked %}
+                        いいね解除
+                    {% else %}
+                        いいね
+                    {% endif %}
+                </button>
+            </form>
+        {% endif %}
+    </div>
+    
+    <!-- 編集・削除ボタン -->
+    {% if user == post.author %}
+        <div style="margin-top: 15px;">
+            <a href="{% url 'likebbs:post_update' post.pk %}" style="background-color: #ffa500; color: white; padding: 5px 10px; text-decoration: none; border-radius: 3px;">編集</a>
+            <a href="{% url 'likebbs:post_delete' post.pk %}" style="background-color: #dc3545; color: white; padding: 5px 10px; text-decoration: none; border-radius: 3px; margin-left: 5px;">削除</a>
+        </div>
+    {% endif %}
+</div>
+
+<div style="margin-top: 20px;">
+    <a href="{% url 'likebbs:post_index' %}">投稿一覧へ戻る</a>
+</div>
+
+<!-- Ajaxのためのスクリプト -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // いいねボタンがクリックされたときの処理
+        document.querySelectorAll('.like-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const postId = this.dataset.postId;
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                
+                // JavaScriptを使っている場合はフォーム送信ボタンを非表示にする
+                document.querySelectorAll('.like-button-fallback').forEach(btn => {
+                    btn.style.display = 'none';
+                });
+                
+                // Ajaxでいいね処理を行う
+                fetch(`/likebbs/posts/api/${postId}/like/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrfToken,
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // いいね数を更新
+                    document.getElementById(`like-count-${postId}`).textContent = `いいね数: ${data.count}`;
+                    
+                    // ボタンのテキストを更新
+                    this.textContent = data.liked ? 'いいね解除' : 'いいね';
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        });
+    });
+</script>
+{% endblock %}

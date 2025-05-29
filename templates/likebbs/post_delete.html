@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}- 投稿削除{% endblock %}
+
+{% block content %}
+<h1>投稿の削除</h1>
+
+<div class="container">
+    <p><strong>以下の投稿を削除しますか？</strong></p>
+    
+    <div style="background-color: #f8f9fa; padding: 15px; border-left: 4px solid #dc3545; margin: 20px 0;">
+        <h3>{{ object.title }}</h3>
+        <p><strong>ジャンル:</strong> {{ object.get_genre_display }}</p>
+        <p><strong>投稿日:</strong> {{ object.created_at|date:"Y年m月d日 H:i" }}</p>
+        <p>{{ object.content|truncatewords:50 }}</p>
+    </div>
+    
+    <p style="color: #dc3545; font-weight: bold;">※この操作は取り消すことができません。</p>
+    
+    <form action="" method="post" style="display: inline;">
+        {% csrf_token %}
+        <button type="submit" style="background-color: #dc3545; color: white; padding: 10px 20px; border: none; border-radius: 3px; cursor: pointer;">
+            削除する
+        </button>
+    </form>
+    
+    <a href="{% url 'likebbs:post_detail' object.pk %}" style="background-color: #6c757d; color: white; padding: 10px 20px; text-decoration: none; border-radius: 3px; margin-left: 10px;">
+        キャンセル
+    </a>
+</div>
+{% endblock %}

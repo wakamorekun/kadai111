@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% load likebbs_tags %}
+
+{% block title %}- 投稿一覧{% endblock %}
+
+{% block content %}
+<h1>投稿一覧</h1>
+
+<!-- ジャンル絞り込み -->
+<div style="margin-bottom: 20px;">
+    <form method="GET" style="display: inline;">
+        <label for="genre">ジャンル絞り込み:</label>
+        <select name="genre" id="genre" onchange="this.form.submit()">
+            <option value="">すべて</option>
+            {% for value, display in genres %}
+                <option value="{{ value }}" {% if value == selected_genre %}selected{% endif %}>
+                    {{ display }}
+                </option>
+            {% endfor %}
+        </select>
+    </form>
+    {% if selected_genre %}
+        <a href="?">絞り込み解除</a>
+    {% endif %}
+</div>
+
+<!-- 投稿一覧 -->
+{% for post in posts %}
+    <div class="container">
+        <h3><a href="{% url 'likebbs:post_detail' post.id %}">{{ post.title }}</a></h3>
+        <p><strong>ジャンル:</strong> {{ post.get_genre_display }}</p>
+        <p><strong>投稿者:</strong> {{ post.author }} | <strong>投稿日:</strong> {{ post.created_at|date:"Y年m月d日 H:i" }}</p>
+        <p>{{ post.content|truncatewords:30 }}</p>
+        
+        <!-- いいねボタンとカウント表示 -->
+        <div class="like-section">
+            <span id="like-count-{{ post.id }}">いいね数: {{ post.like_count }}</span>
+            
+            {% if user.is_authenticated %}
+                {% has_liked_post post user as liked %}
+                <button class="like-button" data-post-id="{{ post.id }}">
+                    {% if liked %}
+                        いいね解除
+                    {% else %}
+                        いいね
+                    {% endif %}
+                </button>
+                
+                <!-- フォーム送信でいいね処理を行う場合（JavaScriptが無効な場合の対応） -->
+                <form action="{% url 'likebbs:post_like' post.id %}" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="like-button-fallback">
+                        {% if liked %}
+                            いいね解除
+                        {% else %}
+                            いいね
+                        {% endif %}
+                    </button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+{% empty %}
+    <p>投稿がありません。</p>
+{% endfor %}
+
+<!-- ページネーション -->
+{% if is_paginated %}
+    <div class="pagination">
+        <span class="page-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1{% if selected_genre %}&genre={{ selected_genre }}{% endif %}">&laquo; 最初</a>
+                <a href="?page={{ page_obj.previous_page_number }}{% if selected_genre %}&genre={{ selected_genre }}{% endif %}">前へ</a>
+            {% endif %}
+            
+            <span class="current">
+                ページ {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+            </span>
+            
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% if selected_genre %}&genre={{ selected_genre }}{% endif %}">次へ</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}{% if selected_genre %}&genre={{ selected_genre }}{% endif %}">最後 &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+{% endif %}
+
+<div style="margin-top: 20px;">
+    <a href="{% url 'likebbs:post_create' %}">新規投稿</a>
+    <a href="{% url 'likebbs:index' %}">旧形式の掲示板</a>
+</div>
+
+<!-- Ajaxのためのスクリプト -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // いいねボタンがクリックされたときの処理
+        document.querySelectorAll('.like-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const postId = this.dataset.postId;
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                
+                // JavaScriptを使っている場合はフォーム送信ボタンを非表示にする
+                document.querySelectorAll('.like-button-fallback').forEach(btn => {
+                    btn.style.display = 'none';
+                });
+                
+                // Ajaxでいいね処理を行う
+                fetch(`/likebbs/posts/api/${postId}/like/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrfToken,
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // いいね数を更新
+                    document.getElementById(`like-count-${postId}`).textContent = `いいね数: ${data.count}`;
+                    
+                    // ボタンのテキストを更新
+                    this.textContent = data.liked ? 'いいね解除' : 'いいね';
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        });
+    });
+</script>
+{% endblock %}
