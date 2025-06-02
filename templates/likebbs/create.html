@@ -1,15 +1,48 @@
 {% extends "base.html" %}
-{% block title%}{{ object|yesno:'-投稿編集,-新規作成' }}{% endblock %}
+
+{% block title %}{% if object %} - 投稿編集{% else %} - 新規投稿{% endif %}{% endblock %}
 
 {% block content %}
-<h1>投稿の{{object|yesno:'編集,新規作成'}}</h1> {# 新規と編集で表示を変更 #}
+<div class="container">
+    <h1>{% if object %}投稿の編集{% else %}新規投稿{% endif %}</h1>
 
-<form action="" method='post'>
-    {% csrf_token %}
-    {{ form.as_p }}  {# すべての項目を表示 #}
-    <button type="submit">{{object|yesno:'更新,作成'}}</button> {# 新規と編集で表示を変更 #}
-</form>
-<div>
-    <a href="{% url 'likebbs:index'%}">一覧ページへ戻る</a>
+    <form action="" method="post">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="{{ form.title.id_for_label }}">{{ form.title.label }}:</label>
+            {{ form.title }}
+            {% if form.title.errors %}
+                <div class="error">{{ form.title.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.genre.id_for_label }}">{{ form.genre.label }}:</label>
+            {{ form.genre }}
+            {% if form.genre.errors %}
+                <div class="error">{{ form.genre.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.content.id_for_label }}">{{ form.content.label }}:</label>
+            {{ form.content }}
+            {% if form.content.errors %}
+                <div class="error">{{ form.content.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <button type="submit" class="btn">
+            {% if object %}更新{% else %}作成{% endif %}
+        </button>
+    </form>
 </div>
-{% endblock  %}
+
+<div style="text-align: center; margin-top: 20px;">
+    {% if object %}
+        <a href="{% url 'likebbs:detail' object.pk %}">投稿詳細へ戻る</a> |
+    {% endif %}
+    <a href="{% url 'likebbs:index' %}">投稿一覧へ戻る</a>
+</div>
+{% endblock %}

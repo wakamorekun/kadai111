@@ -1,12 +1,29 @@
 {% extends "base.html" %}
-{% block title %}-投稿削除{% endblock %}
+
+{% block title %} - 投稿削除{% endblock %}
 
 {% block content %}
-<h1>投稿の削除</h1>
-<p>"{{ object.id }}"の投稿を削除しますか？</p>
-<form action="" method="post">
-    {% csrf_token %}
-    <button type="submit">削除</button>
-</form>
-<a href="{% url 'likebbs:index' %}">一覧ページへ戻る</a>
-{% endblock  %}
+<div class="container">
+    <h1>投稿の削除</h1>
+
+    <div style="background-color: #f8f9fa; padding: 20px; border-left: 4px solid #dc3545; margin: 20px 0; border-radius: 3px;">
+        <p><strong>以下の投稿を削除しますか？</strong></p>
+        
+        <h3>{{ object.title }}</h3>
+        <p><strong>ジャンル:</strong> {{ object.get_genre_display }}</p>
+        <p><strong>投稿日:</strong> {{ object.created_at|date:"Y年m月d日 H:i" }}</p>
+        <div style="max-height: 150px; overflow-y: auto; margin-top: 10px;">
+            {{ object.content|linebreaks }}
+        </div>
+    </div>
+    
+    <p style="color: #dc3545; font-weight: bold;">※この操作は取り消すことができません。</p>
+    
+    <form action="" method="post" style="display: inline;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">削除する</button>
+    </form>
+    
+    <a href="{% url 'likebbs:detail' object.pk %}" class="btn" style="margin-left: 10px; background-color: #6c757d;">キャンセル</a>
+</div>
+{% endblock %}

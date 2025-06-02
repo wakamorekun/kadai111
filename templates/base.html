@@ -3,48 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIKEBBS Project{% block title %}{% endblock %}</title>
+    <title>投稿掲示板{% block title %}{% endblock %}</title>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        
         .container {
-            background-color: #efefef;
-            padding: 15px;
-            margin-bottom: 15px;
+            background-color: white;
+            padding: 20px;
+            margin-bottom: 20px;
             border-radius: 5px;
-        }
-        
-        .like-section {
-            margin-top: 10px;
-        }
-        
-        .like-button, .like-button-fallback {
-            background-color: #4CAF50;
-            border: none;
-            color: white;
-            padding: 5px 10px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 14px;
-            margin: 2px 2px;
-            cursor: pointer;
-            border-radius: 3px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         
         .navigation {
-            background-color: #f8f9fa;
+            background-color: #333;
             padding: 10px;
             margin-bottom: 20px;
             border-radius: 5px;
         }
         
         .navigation a {
-            margin-right: 15px;
+            color: white;
             text-decoration: none;
-            color: #007cba;
+            margin-right: 15px;
+            padding: 5px 10px;
+            border-radius: 3px;
         }
         
         .navigation a:hover {
-            text-decoration: underline;
+            background-color: #555;
+        }
+        
+        .header-info {
+            background-color: #e9ecef;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        
+        .btn {
+            background-color: #007cba;
+            color: white;
+            padding: 10px 15px;
+            text-decoration: none;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            display: inline-block;
+        }
+        
+        .btn:hover {
+            background-color: #005a8a;
+        }
+        
+        .btn-danger {
+            background-color: #dc3545;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        
+        .btn-warning {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        
+        .btn-warning:hover {
+            background-color: #e0a800;
         }
         
         .pagination {
@@ -52,12 +84,16 @@
             margin: 20px 0;
         }
         
-        .pagination a {
+        .pagination a, .pagination .current {
             display: inline-block;
             padding: 8px 16px;
             margin: 0 4px;
             text-decoration: none;
             border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+        
+        .pagination a {
             color: #007cba;
         }
         
@@ -66,18 +102,44 @@
         }
         
         .pagination .current {
-            display: inline-block;
-            padding: 8px 16px;
-            margin: 0 4px;
             background-color: #007cba;
             color: white;
-            border: 1px solid #007cba;
+            border-color: #007cba;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            box-sizing: border-box;
+        }
+        
+        .form-group textarea {
+            height: 120px;
+            resize: vertical;
+        }
+        
+        .error {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: 5px;
         }
     </style>
 </head>
 <body>
     <header>
-        <div>
+        <div class="header-info">
             {% if user.is_authenticated %}
                 <p>ようこそ、{{ user.username }}さん</p>
                 <a href="{% url 'admin:logout' %}">ログアウト</a>
@@ -86,19 +148,17 @@
             {% endif %}
         </div>
         
-        <!-- ナビゲーション -->
         <nav class="navigation">
-            <a href="{% url 'likebbs:index' %}">旧形式掲示板</a>
-            <a href="{% url 'likebbs:post_index' %}">新形式投稿一覧</a>
+            <a href="{% url 'likebbs:index' %}">投稿一覧</a>
             {% if user.is_authenticated %}
-                <a href="{% url 'likebbs:create' %}">旧形式投稿</a>
-                <a href="{% url 'likebbs:post_create' %}">新規投稿</a>
+                <a href="{% url 'likebbs:create' %}">新規投稿</a>
             {% endif %}
         </nav>
     </header>
     
-    {% block content %}
-    {% comment %} 各ページのコンテンツが挿入される {% endcomment %}
-    {% endblock %}
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
 </body>
 </html>
