@@ -1,0 +1,394 @@
+<!-- ========== templates/registration/login.html ========== -->
+{% extends "base.html" %}
+
+{% block title %} - ログイン{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title mb-0">
+                    <i class="bi bi-box-arrow-in-right"></i> ログイン
+                </h3>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {{ form.non_field_errors }}
+                        </div>
+                    {% endif %}
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.username.id_for_label }}" class="form-label">
+                            {{ form.username.label }}
+                        </label>
+                        {{ form.username }}
+                        {% if form.username.errors %}
+                            <div class="text-danger">{{ form.username.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.password.id_for_label }}" class="form-label">
+                            {{ form.password.label }}
+                        </label>
+                        {{ form.password }}
+                        {% if form.password.errors %}
+                            <div class="text-danger">{{ form.password.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-box-arrow-in-right"></i> ログイン
+                        </button>
+                    </div>
+                </form>
+                
+                <hr>
+                <div class="text-center">
+                    <p class="mb-0">アカウントをお持ちでない場合</p>
+                    <a href="{% url 'accounts:register' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-person-plus"></i> 新規登録
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+<!-- ========== templates/registration/register.html ========== -->
+{% extends "base.html" %}
+
+{% block title %} - 新規登録{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white">
+                <h3 class="card-title mb-0">
+                    <i class="bi bi-person-plus"></i> 新規登録
+                </h3>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {{ form.non_field_errors }}
+                        </div>
+                    {% endif %}
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.username.id_for_label }}" class="form-label">
+                            {{ form.username.label }}
+                        </label>
+                        {{ form.username }}
+                        {% if form.username.errors %}
+                            <div class="text-danger">{{ form.username.errors }}</div>
+                        {% endif %}
+                        <div class="form-text">
+                            150文字以下で入力してください。英数字と @/./+/-/_ のみ使用可能です。
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.email.id_for_label }}" class="form-label">
+                            {{ form.email.label }}
+                        </label>
+                        {{ form.email }}
+                        {% if form.email.errors %}
+                            <div class="text-danger">{{ form.email.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.password1.id_for_label }}" class="form-label">
+                            {{ form.password1.label }}
+                        </label>
+                        {{ form.password1 }}
+                        {% if form.password1.errors %}
+                            <div class="text-danger">{{ form.password1.errors }}</div>
+                        {% endif %}
+                        <div class="form-text">
+                            <ul class="small">
+                                <li>他の個人情報と類似していないこと</li>
+                                <li>8文字以上であること</li>
+                                <li>よく使われるパスワードでないこと</li>
+                                <li>数字のみでないこと</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.password2.id_for_label }}" class="form-label">
+                            {{ form.password2.label }}
+                        </label>
+                        {{ form.password2 }}
+                        {% if form.password2.errors %}
+                            <div class="text-danger">{{ form.password2.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-person-plus"></i> 登録
+                        </button>
+                    </div>
+                </form>
+                
+                <hr>
+                <div class="text-center">
+                    <p class="mb-0">既にアカウントをお持ちの場合</p>
+                    <a href="{% url 'accounts:login' %}" class="btn btn-outline-success">
+                        <i class="bi bi-box-arrow-in-right"></i> ログイン
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+<!-- ========== templates/registration/profile.html ========== -->
+{% extends "base.html" %}
+
+{% block title %} - プロフィール{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-info text-white">
+                <h3 class="card-title mb-0">
+                    <i class="bi bi-person-circle"></i> プロフィール編集
+                </h3>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.username.id_for_label }}" class="form-label">
+                                {{ form.username.label }}
+                            </label>
+                            {{ form.username }}
+                            {% if form.username.errors %}
+                                <div class="text-danger">{{ form.username.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.email.id_for_label }}" class="form-label">
+                                {{ form.email.label }}
+                            </label>
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                                <div class="text-danger">{{ form.email.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.first_name.id_for_label }}" class="form-label">
+                                {{ form.first_name.label }}
+                            </label>
+                            {{ form.first_name }}
+                            {% if form.first_name.errors %}
+                                <div class="text-danger">{{ form.first_name.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.last_name.id_for_label }}" class="form-label">
+                                {{ form.last_name.label }}
+                            </label>
+                            {{ form.last_name }}
+                            {% if form.last_name.errors %}
+                                <div class="text-danger">{{ form.last_name.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-info">
+                            <i class="bi bi-check-circle"></i> 更新
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card shadow">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-graph-up"></i> 統計情報
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6">
+                        <div class="border-end">
+                            <h4 class="text-primary">{{ user_posts_count }}</h4>
+                            <small class="text-muted">投稿数</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <h4 class="text-danger">{{ user_likes_count }}</h4>
+                        <small class="text-muted">いいね数</small>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="d-grid gap-2">
+                    <a href="{% url 'likebbs:index' %}" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-list"></i> 自分の投稿を見る
+                    </a>
+                    <a href="{% url 'likebbs:create' %}" class="btn btn-outline-success btn-sm">
+                        <i class="bi bi-plus-circle"></i> 新規投稿
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card shadow mt-3">
+            <div class="card-header bg-warning text-dark">
+                <h6 class="card-title mb-0">
+                    <i class="bi bi-info-circle"></i> アカウント情報
+                </h6>
+            </div>
+            <div class="card-body">
+                <p class="small mb-1"><strong>登録日:</strong> {{ user.date_joined|date:"Y年m月d日" }}</p>
+                <p class="small mb-0"><strong>最終ログイン:</strong> {{ user.last_login|date:"Y年m月d日 H:i" }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+<!-- ========== templates/likebbs/includes/post_card.html ========== -->
+<div class="card mb-3 shadow-sm">
+    <div class="card-body">
+        <div class="row">
+            <div class="col">
+                <h5 class="card-title">
+                    <a href="{% url 'likebbs:detail' post.id %}" class="text-decoration-none">
+                        {{ post.title }}
+                    </a>
+                </h5>
+                
+                <div class="mb-2">
+                    <span class="badge bg-secondary genre-badge">
+                        <i class="bi bi-tag"></i> {{ post.get_genre_display }}
+                    </span>
+                </div>
+                
+                <p class="card-text text-muted small">
+                    <i class="bi bi-person"></i> {{ post.author.username }} | 
+                    <i class="bi bi-calendar"></i> {{ post.created_at|date:"Y年m月d日 H:i" }}
+                </p>
+                
+                <p class="card-text">{{ post.content|truncatewords:20 }}</p>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="like-section">
+                        <span class="text-muted small" id="like-count-{{ post.id }}">
+                            <i class="bi bi-heart"></i> {{ post.like_count }}
+                        </span>
+                        
+                        {% if user.is_authenticated %}
+                            <button class="btn btn-sm {% if user_liked %}btn-danger{% else %}btn-outline-danger{% endif %} like-button ms-2" 
+                                    data-post-id="{{ post.id }}">
+                                <i class="bi bi-heart{% if user_liked %}-fill{% endif %}"></i>
+                                <span class="like-text">{% if user_liked %}いいね済み{% else %}いいね{% endif %}</span>
+                            </button>
+                        {% endif %}
+                    </div>
+                    
+                    <a href="{% url 'likebbs:detail' post.id %}" class="btn btn-primary btn-sm">
+                        <i class="bi bi-arrow-right"></i> 詳細
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========== templates/likebbs/includes/search_form.html ========== -->
+<div class="search-form mb-4">
+    <div class="container">
+        <h4 class="text-white mb-3">
+            <i class="bi bi-search"></i> 投稿を検索
+        </h4>
+        
+        <form method="GET" class="row g-3">
+            <div class="col-md-4">
+                <div class="form-floating">
+                    {{ search_form.keyword }}
+                    <label for="{{ search_form.keyword.id_for_label }}">
+                        {{ search_form.keyword.label }}
+                    </label>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="form-floating">
+                    {{ search_form.genre }}
+                    <label for="{{ search_form.genre.id_for_label }}">
+                        {{ search_form.genre.label }}
+                    </label>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="form-floating">
+                    {{ search_form.ordering }}
+                    <label for="{{ search_form.ordering.id_for_label }}">
+                        {{ search_form.ordering.label }}
+                    </label>
+                </div>
+            </div>
+            
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-light w-100 h-100">
+                    <i class="bi bi-search"></i> 検索
+                </button>
+            </div>
+        </form>
+        
+        {% if request.GET %}
+            <div class="mt-2">
+                <a href="?" class="btn btn-outline-light btn-sm">
+                    <i class="bi bi-x-circle"></i> 検索条件をクリア
+                </a>
+            </div>
+        {% endif %}
+        
+        <div class="row mt-3 text-center">
+            <div class="col-md-4">
+                <h6 class="text-white-50">総投稿数</h6>
+                <h4 class="text-white">{{ stats.total_posts }}</h4>
+            </div>
+            <div class="col-md-4">
+                <h6 class="text-white-50">参加ユーザー</h6>
+                <h4 class="text-white">{{ stats.total_users }}</h4>
+            </div>
+            <div class="col-md-4">
+                <h6 class="text-white-50">総いいね数</h6>
+                <h4 class="text-white">{{ stats.total_likes }}</h4>
+            </div>
+        </div>
+    </div>
+</div>
